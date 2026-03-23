@@ -12,6 +12,12 @@ import cardTemplateRoutes from './routes/cardTemplates.routes.js'
 import { errorHandler, notFound } from './middleware/errorHandler.js'
 
 dotenv.config()
+const cors = require('cors');
+
+app.use(cors({
+  origin: 'https://shreeramidcard.netlify.app',
+  credentials: true
+}));
 
 const app  = express()
 const PORT = process.env.PORT || 5000
