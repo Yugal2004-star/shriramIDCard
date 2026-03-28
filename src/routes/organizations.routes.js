@@ -6,6 +6,7 @@ import {
   getOrganization,
   createOrganization,
   uploadLogo,
+  removeLogo,
   updateOrganization,
   deleteOrganization,
 } from '../controllers/Organizations.controller.js'
@@ -21,11 +22,12 @@ const upload = multer({
 })
 
 router.use(requireAuth)
-router.get('/',listOrganizations)               // GET    /api/organizations
-router.get('/:id',getOrganization)                 // GET    /api/organizations/:id
-router.post('/',createOrganization)              // POST   /api/organizations
-router.post('/:id/logo',upload.single('logo'), uploadLogo) // POST /api/organizations/:id/logo
-router.patch('/:id',updateOrganization)              // PATCH  /api/organizations/:id
-router.delete('/:id',deleteOrganization)              // DELETE /api/organizations/:id
+router.get('/',         listOrganizations)                        // GET    /api/organizations
+router.get('/:id',      getOrganization)                          // GET    /api/organizations/:id
+router.post('/',        createOrganization)                       // POST   /api/organizations
+router.post('/:id/logo',   upload.single('logo'), uploadLogo)    // POST   /api/organizations/:id/logo
+router.delete('/:id/logo', removeLogo)                           // DELETE /api/organizations/:id/logo  ← FIX: new route
+router.patch('/:id',    updateOrganization)                       // PATCH  /api/organizations/:id
+router.delete('/:id',   deleteOrganization)                       // DELETE /api/organizations/:id
 
 export default router

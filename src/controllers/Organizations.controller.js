@@ -69,6 +69,12 @@ export async function uploadLogo(req, res, next) {
     const ext  = req.file.mimetype === 'image/png' ? 'png' : req.file.mimetype === 'image/webp' ? 'webp' : 'jpg'
     const path = `logos/${id}/logo.${ext}`
 
+    // FIX: Remove all existing logo variants before uploading the new one.
+    // This avoids leftover stale files (e.g. old .png when new upload is .jpg).
+    await supabaseAdmin.storage
+      .from(ORG_BUCKET)
+      .remove([`logos/${id}/logo.jpg`, `logos/${id}/logo.png`, `logos/${id}/logo.webp`])
+
     const { error: uploadErr } = await supabaseAdmin.storage
       .from(ORG_BUCKET)
       .upload(path, req.file.buffer, { contentType: req.file.mimetype, upsert: true })
@@ -86,6 +92,30 @@ export async function uploadLogo(req, res, next) {
     if (error) throw error
 
     res.json({ data, logo_url })
+  } catch (err) { next(err) }
+}
+
+/* DELETE /api/organizations/:id/logo — remove logo */
+// FIX: new endpoint to handle explicit logo removal by the user
+export async function removeLogo(req, res, next) {
+  try {
+    const { id } = req.params
+
+    // Remove all possible logo file variants from storage
+    await supabaseAdmin.storage
+      .from(ORG_BUCKET)
+      .remove([`logos/${id}/logo.jpg`, `logos/${id}/logo.png`, `logos/${id}/logo.webp`])
+
+    // Clear logo_url in the database
+    const { data, error } = await supabaseAdmin
+      .from('organizations')
+      .update({ logo_url: null })
+      .eq('id', id)
+      .select()
+      .single()
+    if (error) throw error
+
+    res.json({ data })
   } catch (err) { next(err) }
 }
 
