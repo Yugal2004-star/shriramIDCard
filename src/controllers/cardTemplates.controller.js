@@ -24,11 +24,12 @@ export async function createCardTemplate(req, res, next) {
 
 export async function updateCardTemplate(req, res, next) {
   try {
-    const { name, config, org_id } = req.body
+    const { name, config, org_id, org_name } = req.body
     const updates = {}
-    if (name   !== undefined) updates.name   = name.trim()
-    if (config !== undefined) updates.config = config
-    if (org_id !== undefined) updates.org_id = org_id
+    if (name     !== undefined) updates.name     = name.trim()
+    if (config   !== undefined) updates.config   = config
+    if (org_id   !== undefined) updates.org_id   = org_id
+    if (org_name !== undefined) updates.org_name = org_name
     const { data, error } = await supabaseAdmin
       .from('card_templates').update(updates).eq('id', req.params.id).select().single()
     if (error) throw error
