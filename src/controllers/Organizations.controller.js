@@ -34,21 +34,22 @@ export async function getOrganization(req, res, next) {
 /* POST /api/organizations */
 export async function createOrganization(req, res, next) {
   try {
-    const { name, type, address, contact, email, website } = req.body
+const { name, type, address, contact, email, website, classes_config } = req.body
     if (!name?.trim()) return res.status(400).json({ error: 'Organization name is required' })
     if (!type)         return res.status(400).json({ error: 'Organization type is required' })
 
     const { data, error } = await supabaseAdmin
       .from('organizations')
-      .insert([{
-        name:    name.trim(),
-        type,
-        address: address || null,
-        contact: contact || null,
-        email:   email   || null,
-        website: website || null,
-        created_by: req.user.id,
-      }])
+.insert([{
+  name:           name.trim(),
+  type,
+  address:        address        || null,
+  contact:        contact        || null,
+  email:          email          || null,
+  website:        website        || null,
+  classes_config: classes_config || [],
+  created_by:     req.user.id,
+}])
       .select()
       .single()
 
@@ -122,7 +123,7 @@ export async function removeLogo(req, res, next) {
 /* PATCH /api/organizations/:id */
 export async function updateOrganization(req, res, next) {
   try {
-    const { name, type, address, contact, email, website } = req.body
+const { name, type, address, contact, email, website, classes_config } = req.body
     const updates = {}
     if (name    !== undefined) updates.name    = name.trim()
     if (type    !== undefined) updates.type    = type
@@ -130,6 +131,7 @@ export async function updateOrganization(req, res, next) {
     if (contact !== undefined) updates.contact = contact || null
     if (email   !== undefined) updates.email   = email   || null
     if (website !== undefined) updates.website = website || null
+    if (classes_config !== undefined) updates.classes_config = classes_config || []
 
     const { data, error } = await supabaseAdmin
       .from('organizations')
