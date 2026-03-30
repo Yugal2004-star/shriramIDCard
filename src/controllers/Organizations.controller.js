@@ -17,6 +17,20 @@ export async function listOrganizations(req, res, next) {
   } catch (err) { next(err) }
 }
 
+/* GET /api/organizations/public?name=... — no auth, for student forms */
+export async function listOrganizationsPublic(req, res, next) {
+  try {
+    const { name } = req.query
+    let query = supabaseAdmin
+      .from('organizations')
+      .select('id, name, type, classes_config')
+    if (name) query = query.ilike('name', name)
+    const { data, error } = await query
+    if (error) throw error
+    res.json({ data })
+  } catch (err) { next(err) }
+}
+
 /* GET /api/organizations/:id */
 export async function getOrganization(req, res, next) {
   try {

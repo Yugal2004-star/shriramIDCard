@@ -3,6 +3,7 @@ import multer from 'multer'
 import { requireAuth } from '../middleware/auth.js'
 import {
   listOrganizations,
+  listOrganizationsPublic,  // ← add this
   getOrganization,
   createOrganization,
   uploadLogo,
@@ -22,6 +23,7 @@ const upload = multer({
 })
 
 router.use(requireAuth)
+router.get('/public', listOrganizationsPublic)
 router.get('/',         listOrganizations)                        // GET    /api/organizations
 router.get('/:id',      getOrganization)                          // GET    /api/organizations/:id
 router.post('/',        createOrganization)                       // POST   /api/organizations
