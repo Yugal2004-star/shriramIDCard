@@ -23,20 +23,25 @@ app.use(helmet())
 /* ── Trust Render's proxy so rate limiting works per real IP ── */
 app.set('trust proxy', 1)
 
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://shreeramidcardsss.netlify.app')
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://shreeramidcardsss.netlify.app').split(',');
 
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      cb(null, true)
+    // allow requests with no origin (like Postman, mobile apps)
+    if (!origin) return cb(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      cb(null, true);
     } else {
-      cb(new Error('Not allowed by CORS'))
+      console.log("❌ Blocked by CORS:", origin);
+      cb(new Error("Not allowed by CORS"));
     }
   },
   credentials: true,
-    methods: ['GET','POST','PATCH','DELETE','OPTIONS'],
+  methods: ['GET','POST','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization'],
-}))
+}));
+app.options('*', cors());
 
 /* ── General rate limiter — all API routes ─────────────────────
    JSON handler so frontend can parse the error properly         */
