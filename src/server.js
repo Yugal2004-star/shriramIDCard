@@ -23,7 +23,7 @@ app.use(helmet())
 /* ── Trust Render's proxy so rate limiting works per real IP ── */
 app.set('trust proxy', 1)
 
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://shreeramidcardsss.netlify.app').split(',');
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'https://shriramidcardsss.netlify.app').split(',');
 
 app.use(cors({
   origin: (origin, cb) => {
